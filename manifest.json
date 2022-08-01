@@ -1,0 +1,8 @@
+{
+	"name": "Booru Reader",
+	"short_name": "Booru",
+	"display": "standalone",
+	"scope": "/",
+	"start_url": "/",
+	"version": "0.2.2"
+}
