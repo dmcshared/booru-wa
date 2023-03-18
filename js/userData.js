@@ -8,7 +8,10 @@ import { TagSet } from './TagSet.js';
  * 		collections: {[key:string]: TagSet},
  * 		metaCollections: {[key:string]: {[name:string]: TagSet}},
  * 		tagMode: "all" | "indiv",
- * }, () => void]} */
+ * 		userPreferences: { [key:string]: number }
+ *    filterByPrefs: boolean
+ *  }, () => void]}
+ * */
 export function getUserData() {
 	const userData = JSON.parse(localStorage.userData ?? '{}');
 
@@ -28,6 +31,10 @@ export function getUserData() {
 	userData.metaCollections = userData.metaCollections ?? {};
 	// TagMode: All, Indiv
 	userData.tagMode = userData.tagMode ?? 'all';
+
+	userData.userPreferences = userData.userPreferences ?? {};
+
+	userData.filterByPrefs = userData.filterByPrefs ?? false;
 
 	for (const col in userData.collections) {
 		userData.collections[col] = new TagSet(userData.collections[col]);

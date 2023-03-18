@@ -61,6 +61,14 @@ export class Instance extends ImageAPIInstance {
 			timg.replace('api-cdn', 'us') + '?' + this.raw.id,
 		];
 	}
+
+	getIdent() {
+		return this.raw.id;
+	}
+
+	getTags() {
+		return this.tags;
+	}
 }
 
 export class API extends ImageAPI {

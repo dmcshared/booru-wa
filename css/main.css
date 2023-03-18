@@ -20,7 +20,7 @@ body {
 	left: 0;
 	z-index: 10;
 }
-
+/* 
 .menu > .button {
 	position: fixed;
 	bottom: 0.1cm;
@@ -29,13 +29,23 @@ body {
 	height: 1cm;
 	background: var(--acc);
 	border-radius: 0.5cm;
+} */
+
+.menu > .button {
+	position: fixed;
+	bottom: 0cm;
+	left: 0cm;
+	width: 1.5cm;
+	height: 1.5cm;
+	background: var(--acc);
+	border-top-right-radius: 0.5cm;
 }
 
 .menu > .button::before {
 	content: '';
 	position: fixed;
-	bottom: 0.5cm;
-	left: 0.3cm; /* 0.1cm + 0.2cm off each side */
+	bottom: 0.65cm;
+	left: 0.45cm; /* 0.1cm + 0.2cm off each side */
 	width: 0.6cm;
 	height: 0.2cm;
 	background: var(--fg);
@@ -64,6 +74,14 @@ body {
 	width: calc(100vw - 1cm);
 	margin-bottom: 0.5cm;
 	overflow: hidden;
+}
+
+.content > .item.liked {
+	border-bottom: 0.2cm solid #5c5;
+}
+
+.content > .item.disliked {
+	border-bottom: 0.2cm solid var(--acc);
 }
 
 .content > .item > img {

@@ -51,6 +51,16 @@ DEBUG.saveUserData = saveUserData;
 		location.href = location.href;
 	});
 
+	const prefModeSwitch = document.querySelector('#Prefs');
+	prefModeSwitch.textContent =
+		'FilterByPrefs: ' + (userData.filterByPrefs ? 'Yes' : 'No');
+	prefModeSwitch.addEventListener('click', () => {
+		userData.filterByPrefs = !userData.filterByPrefs;
+		saveUserData();
+
+		location.href = location.href;
+	});
+
 	/*
 <div class="collection container">
 				<h3>

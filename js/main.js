@@ -12,9 +12,31 @@ const [userData, saveUserData] = ud;
 DEBUG.userData = userData;
 DEBUG.saveUserData = saveUserData;
 
+function verifyPost(post) {
+	if (userData.filterByPrefs) {
+		if (userData.userPreferences) {
+			// tally up score of post
+			let score = 0;
+			for (const tag of post.tags) {
+				if (userData.userPreferences[tag]) {
+					score += userData.userPreferences[tag];
+				}
+			}
+
+			console.log('Score: ' + score);
+
+			// if score is positive, return true
+			return score > 0;
+		}
+		return false;
+	}
+	return true;
+}
+
 //#endregion
 
 (async function () {
+	/** @type {import("./apis/interface.js").ImageAPI} */
 	const currentBooru = new (await import(userData.source)).API();
 	DEBUG.currentBooru = currentBooru;
 
@@ -28,8 +50,8 @@ DEBUG.saveUserData = saveUserData;
 	let currentPages = {};
 	let cooldown = 0;
 
-	function addPage() {
-		if (Date.now() - cooldown < 2000) {
+	function addPage(force = false) {
+		if (!force && Date.now() - cooldown < 2000) {
 			return;
 		}
 
@@ -37,8 +59,15 @@ DEBUG.saveUserData = saveUserData;
 			currentBooru
 				.getPosts(userData.tags, 20, currentPage++, userData.alwaysTags)
 				.then((posts) => {
+					let total = 0;
 					for (const post of posts) {
-						createHTMLFromPost(post, ud, contentDiv);
+						if (verifyPost(post)) {
+							total++;
+							createHTMLFromPost(post, ud, contentDiv);
+						}
+					}
+					if (total === 0) {
+						addPage(true);
 					}
 				});
 		} else {
@@ -54,8 +83,15 @@ DEBUG.saveUserData = saveUserData;
 						userData.alwaysTags
 					)
 					.then((posts) => {
+						let total = 0;
 						for (const post of posts) {
-							createHTMLFromPost(post, ud, contentDiv);
+							if (verifyPost(post)) {
+								total++;
+								createHTMLFromPost(post, ud, contentDiv);
+							}
+						}
+						if (total === 0) {
+							addPage(true);
 						}
 					});
 			}
@@ -66,13 +102,16 @@ DEBUG.saveUserData = saveUserData;
 
 	addPage();
 
-	let lastScrollHeight = 0;
+	let lastScrollTime = 0;
+
 	contentDiv.addEventListener('scroll', () => {
 		if (
 			contentDiv.scrollTop + contentDiv.clientHeight * 2 >=
 				contentDiv.scrollHeight &&
-			lastScrollHeight != contentDiv.scrollHeight
+			Date.now() - lastScrollTime > 1000
 		) {
+			lastScrollTime = Date.now();
+			console.log('Adding page');
 			addPage();
 			lastScrollHeight = contentDiv.scrollHeight;
 		}

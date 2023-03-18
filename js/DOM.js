@@ -1,9 +1,14 @@
 import { ImageAPIInstance } from './apis/interface.js';
 
+const postSet = new Set();
+
 /**
  * @param {ImageAPIInstance} post
  */
 export function createHTMLFromPost(post, [userData, saveUserData], parent) {
+	if (postSet.has(post.getIdent())) return;
+	postSet.add(post.getIdent());
+
 	const item = document.createElement('div');
 	item.classList.add('item');
 	item.hidden = true;
@@ -62,8 +67,85 @@ export function createHTMLFromPost(post, [userData, saveUserData], parent) {
 			item.hidden = false;
 		});
 
-		img.addEventListener('click', () => {
-			tagsList.hidden = !tagsList.hidden;
+		// img.addEventListener('click', () => {
+		// 	tagsList.hidden = !tagsList.hidden;
+		// });
+
+		let touchStart = 0;
+		let initialTouchPos = [0, 0];
+		let touchPos = [0, 0];
+		let likedstate = 0;
+
+		img.addEventListener('touchstart', (e) => {
+			// tagsList.hidden = !tagsList.hidden;
+			touchStart = Date.now();
+			initialTouchPos = [e.touches[0].clientX, e.touches[0].clientY];
+		});
+
+		img.addEventListener('touchmove', (e) => {
+			// save touch position
+			touchPos = [e.touches[0].clientX, e.touches[0].clientY];
+		});
+
+		img.addEventListener('touchend', () => {
+			if (!(Date.now() - touchStart < 500)) return;
+
+			// if swipes left, or right
+			if (
+				Math.abs(touchPos[0] - initialTouchPos[0]) > 100 &&
+				Math.abs(touchPos[1] - initialTouchPos[1]) < 100
+			) {
+				if (touchPos[0] < initialTouchPos[0]) {
+					// swipe left (dislike)
+
+					// loop thru tags
+					for (const tag of post.getTags()) {
+						if (!(tag in userData.userPreferences)) {
+							userData.userPreferences[tag] = 0;
+						}
+						userData.userPreferences[tag] -= likedstate;
+					}
+
+					likedstate = -1;
+
+					// loop thru tags
+					for (const tag of post.getTags()) {
+						userData.userPreferences[tag] += likedstate;
+					}
+
+					saveUserData();
+
+					item.classList.add('disliked');
+					item.classList.remove('liked');
+				} else {
+					// swipe right
+
+					// loop thru tags
+					for (const tag of post.getTags()) {
+						if (!(tag in userData.userPreferences)) {
+							userData.userPreferences[tag] = 0;
+						}
+						userData.userPreferences[tag] -= likedstate;
+					}
+
+					likedstate = 1;
+
+					// loop thru tags
+					for (const tag of post.getTags()) {
+						userData.userPreferences[tag] += likedstate;
+					}
+
+					saveUserData();
+
+					item.classList.add('liked');
+					item.classList.remove('disliked');
+				}
+			} else if (
+				Math.abs(touchPos[0] - initialTouchPos[0]) < 100 &&
+				Math.abs(touchPos[1] - initialTouchPos[1]) < 100
+			) {
+				tagsList.hidden = !tagsList.hidden;
+			}
 		});
 	});
 

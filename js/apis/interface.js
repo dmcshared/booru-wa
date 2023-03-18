@@ -2,9 +2,22 @@ import { TagSet } from '../TagSet.js';
 
 export class ImageAPIInstance {
 	/**
-	 * @returns { string[]}
+	 * @returns {string[]}
+	 * @abstract
 	 */
 	getImageURLs() {}
+
+	/**
+	 * @returns {number}
+	 * @abstract
+	 */
+	getIdent() {}
+
+	/**
+	 * @returns {TagSet}
+	 * @abstract
+	 */
+	getTags() {}
 }
 
 export class ImageAPI {
