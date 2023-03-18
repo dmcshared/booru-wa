@@ -80,9 +80,11 @@ export function createHTMLFromPost(post, [userData, saveUserData], parent) {
 			// tagsList.hidden = !tagsList.hidden;
 			touchStart = Date.now();
 			initialTouchPos = [e.touches[0].clientX, e.touches[0].clientY];
+			touchPos = [e.touches[0].clientX, e.touches[0].clientY];
 		});
 
 		img.addEventListener('touchmove', (e) => {
+			// e.preventDefault();
 			// save touch position
 			touchPos = [e.touches[0].clientX, e.touches[0].clientY];
 		});
@@ -92,8 +94,9 @@ export function createHTMLFromPost(post, [userData, saveUserData], parent) {
 
 			// if swipes left, or right
 			if (
-				Math.abs(touchPos[0] - initialTouchPos[0]) > 100 &&
-				Math.abs(touchPos[1] - initialTouchPos[1]) < 100
+				Math.abs(touchPos[0] - initialTouchPos[0]) > 50 &&
+				Math.abs(touchPos[1] - initialTouchPos[1]) <
+					Math.abs(touchPos[0] - initialTouchPos[0])
 			) {
 				if (touchPos[0] < initialTouchPos[0]) {
 					// swipe left (dislike)
